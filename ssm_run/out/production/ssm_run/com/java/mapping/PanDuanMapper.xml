@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.java.dao.PanDuanMapper" >
+  <resultMap id="BaseResultMap" type="com.java.model.PanDuan" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="News_ID" property="newsId" jdbcType="INTEGER" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="Right" property="right" jdbcType="VARCHAR" />
+    <result column="Grade" property="grade" jdbcType="INTEGER" />
+  </resultMap>
+  
+<sql id="get_where" >
+    <where>
+    	<if test="grade!=null and grade!=''">
+	        	AND grade =#{grade,jdbcType=INTEGER}   
+      </if>
+      <if test="newsId!=null and newsId!=''">
+	        	AND News_ID =#{newsId,jdbcType=INTEGER}   
+      </if>
+    </where>
+  </sql>
+  <sql id="setpage">
+	<if test="page!=null">
+	    order by #{page.order,jdbcType=VARCHAR}
+	    LIMIT #{page.sum,jdbcType=INTEGER}, #{page.pagesize,jdbcType=INTEGER}
+    </if>
+</sql>
+<select id="Get" resultMap="BaseResultMap" parameterType="com.java.model.PanDuan">
+    select * from panduan
+  	<include refid="get_where" />
+    <include refid="setpage" />
+    </select>
+    <select id="GetCount"  parameterType="com.java.model.PanDuan" resultType="java.lang.Integer">
+    select count(*) 
+    from panduan
+    <include refid="get_where" />
+  </select>
+
+
+  <select id="GetByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select *
+    from panduan
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="Del" parameterType="java.lang.Integer" >
+    delete from panduan
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="Add" parameterType="com.java.model.PanDuan" >
+    insert into panduan 
+    values (NULL, #{newsId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{right,jdbcType=VARCHAR}, #{grade,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="Edit" parameterType="com.java.model.PanDuan" >
+    update panduan
+    <set >
+      <if test="newsId != null" >
+        News_ID = #{newsId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        Title = #{title,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="right != null" >
+        `Right` = #{right,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        `Grade` = #{grade,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.java.dao.ExamPanDuanMapper" >
+  <resultMap id="BaseResultMap" type="com.java.model.ExamPanDuan" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="Exam_ID" property="examId" jdbcType="INTEGER" />
+    <result column="PanDuan_ID" property="panduanId" jdbcType="INTEGER" />
+    <result column="Score" property="score" jdbcType="INTEGER" />
+  </resultMap>
+  
+<sql id="get_where" >
+    <where>
+    	<if test="examId!=null and examId!=''">
+	        	AND Exam_ID =#{examId,jdbcType=INTEGER}   
+      </if>
+    </where>
+  </sql>
+  <sql id="setpage">
+	<if test="page!=null">
+	    order by #{page.order,jdbcType=VARCHAR}
+	    LIMIT #{page.sum,jdbcType=INTEGER}, #{page.pagesize,jdbcType=INTEGER}
+    </if>
+</sql>
+<select id="Get" resultMap="BaseResultMap" parameterType="com.java.model.ExamPanDuan">
+    select * from exampanduan
+  	<include refid="get_where" />
+    <include refid="setpage" />
+    </select>
+    <select id="GetCount"  parameterType="com.java.model.ExamPanDuan" resultType="java.lang.Integer">
+    select count(*) 
+    from exampanduan
+    <include refid="get_where" />
+  </select>
+
+
+  <delete id="Del" parameterType="java.lang.Integer" >
+    delete from exampanduan
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="Add" parameterType="com.java.model.ExamPanDuan" >
+    insert into exampanduan 
+    values (NULL, #{examId,jdbcType=INTEGER}, #{panduanId,jdbcType=INTEGER}, 
+      #{score,jdbcType=INTEGER})
+  </insert>
+  
+</mapper>

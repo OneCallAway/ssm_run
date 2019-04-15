@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.java.dao.ExamMapper" >
+  <resultMap id="BaseResultMap" type="com.java.model.Exam" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="Grade" property="grade" jdbcType="INTEGER" />
+    <result column="Teacher_ID" property="teacherId" jdbcType="INTEGER" />
+  </resultMap>
+  
+
+<sql id="get_where" >
+    <where>
+      <if test="teacherId!=null and teacherId!=''">
+	        	AND Teacher_ID =#{teacherId,jdbcType=INTEGER}   
+      </if>
+    </where>
+  </sql>
+  <sql id="setpage">
+	<if test="page!=null">
+	    order by #{page.order,jdbcType=VARCHAR}
+	    LIMIT #{page.sum,jdbcType=INTEGER}, #{page.pagesize,jdbcType=INTEGER}
+    </if>
+</sql>
+<select id="Get" resultMap="BaseResultMap" parameterType="com.java.model.Exam">
+    select * from exam
+  	<include refid="get_where" />
+    <include refid="setpage" />
+    </select>
+    <select id="GetCount"  parameterType="com.java.model.Exam" resultType="java.lang.Integer">
+    select count(*) 
+    from exam
+    <include refid="get_where" />
+  </select>
+
+  <select id="GetByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * 
+    from exam
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="Del" parameterType="java.lang.Integer" >
+    delete from exam
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="Add" parameterType="com.java.model.Exam" useGeneratedKeys="true" keyProperty="id">
+    insert into exam 
+    values (NULL, #{title,jdbcType=VARCHAR}, #{grade,jdbcType=INTEGER}, 
+      #{teacherId,jdbcType=INTEGER})
+  </insert>
+ 
+</mapper>

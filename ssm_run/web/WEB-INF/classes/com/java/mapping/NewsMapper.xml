@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.java.dao.NewsMapper" >
+  <resultMap id="BaseResultMap" type="com.java.model.News" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="teacher_Id" property="teacherId" jdbcType="INTEGER" />
+    <result column="InTime" property="intime" jdbcType="TIMESTAMP" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="NewsType_ID" property="newstypeId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.java.model.News" extends="BaseResultMap" >
+    <result column="Content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+ 
+  <sql id="get_where" >
+    <where>
+    	<if test="title!=null and title!=''">
+	        	AND title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')   
+      </if>
+      <if test="newstypeId!=null and newstypeId!=''">
+	        	AND NewsType_ID=#{newstypeId,jdbcType=INTEGER}  
+      </if>
+      <if test="teacherId!=null and teacherId!=''">
+	        	AND Teacher_ID=#{teacherId,jdbcType=INTEGER}  
+      </if>
+      <if test="state!=null and state!=-1">
+	        	AND state=#{state,jdbcType=INTEGER}  
+      </if>
+    </where>
+  </sql>
+  <select id="GetByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * 
+    from news
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="Get" resultMap="BaseResultMap" parameterType="com.java.model.News">
+    select * 
+    from news
+    <include refid="get_where" />
+    <if test="page!=null">
+    order by #{page.order,jdbcType=VARCHAR}
+    LIMIT #{page.sum,jdbcType=INTEGER}, #{page.pagesize,jdbcType=INTEGER}
+    </if>
+    </select>
+    <select id="GetCount"  parameterType="com.java.model.News" resultType="java.lang.Integer">
+    select count(*) 
+    from news
+    <include refid="get_where" />
+  </select>
+  <delete id="Del" parameterType="java.lang.Integer" >
+    delete from news
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="Add" parameterType="com.java.model.News" >
+    insert into news (ID, Title,
+      Hot, InTime, img, 
+      NewsType_ID, Content,state,Teacher_ID)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      0, now(), '', 
+      #{newstypeId,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR},1,#{teacherId,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="Edit" parameterType="com.java.model.News" >
+    update news
+    set Title = #{title,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      NewsType_ID = #{newstypeId,jdbcType=INTEGER},
+      Content = #{content,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="EditState" parameterType="com.java.model.News" >
+    update news
+    set state = #{state,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+ 
+</mapper>

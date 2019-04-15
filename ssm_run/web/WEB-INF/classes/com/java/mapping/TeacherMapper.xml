@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.java.dao.TeacherMapper" >
+  <resultMap id="BaseResultMap" type="com.java.model.Teacher" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="TeacherType_ID" property="teachertypeId" jdbcType="INTEGER" />
+    <result column="Img" property="img" jdbcType="VARCHAR" />
+    <result column="Login" property="login" jdbcType="VARCHAR" />
+    <result column="Pwd" property="pwd" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.java.model.Teacher" extends="BaseResultMap" >
+    <result column="Content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="get_where" >
+    <where>
+    	<if test="name!=null and name!=''">
+	        	AND name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')   
+      </if>
+      <if test="teachertypeId!=null and teachertypeId!=''">
+	        	AND TeacherType_ID =#{teachertypeId,jdbcType=INTEGER}   
+      </if>
+    </where>
+  </sql>
+  <sql id="setpage">
+	<if test="page!=null">
+	    order by #{page.order,jdbcType=VARCHAR}
+	    LIMIT #{page.sum,jdbcType=INTEGER}, #{page.pagesize,jdbcType=INTEGER}
+    </if>
+</sql>
+<select id="Get" resultMap="BaseResultMap" parameterType="com.java.model.Teacher">
+    select * from teacher
+  	<include refid="get_where" />
+    <include refid="setpage" />
+    </select>
+    <select id="GetCount"  parameterType="com.java.model.Teacher" resultType="java.lang.Integer">
+    select count(*) 
+    from teacher
+    <include refid="get_where" />
+  </select>
+  
+  <select id="Login" resultMap="BaseResultMap" parameterType="com.java.model.Teacher" >
+    select * from teacher
+    where login = #{login,jdbcType=VARCHAR}
+  </select>
+  <select id="GetByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * from teacher
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="Del" parameterType="java.lang.Integer" >
+    delete from teacher
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="Add" parameterType="com.java.model.Teacher" >
+    insert into teacher (ID, Name, TeacherType_ID, img,Content,login,pwd)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{teachertypeId,jdbcType=INTEGER}, 
+      #{img,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR},#{login,jdbcType=VARCHAR},#{pwd,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="Edit" parameterType="com.java.model.Teacher" >
+    update teacher
+    set Name = #{name,jdbcType=VARCHAR},
+      TeacherType_ID = #{teachertypeId,jdbcType=INTEGER},
+      img = #{img,jdbcType=VARCHAR},
+      Content = #{content,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+    <update id="EditPass" parameterType="com.java.model.Teacher" >
+    update teacher set pwd=#{pwd,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>
